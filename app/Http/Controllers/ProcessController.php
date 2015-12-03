@@ -31,6 +31,13 @@ class ProcessController extends Controller
               return response()->json($res);
             } 
 
+            $australian_phone = "/^(\+\d{2}[ \-]{0,1}){0,1}(((\({0,1}[ \-]{0,1})0{0,1}\){0,1}[2|3|7|8]{1}\){0,1}[ \-]*(\d{4}[ \-]{0,1}\d{4}))|(1[ \-]{0,1}(300|800|900|902)[ \-]{0,1}((\d{6})|(\d{3}[ \-]{0,1}\d{3})))|(13[ \-]{0,1}([\d \-]{5})|((\({0,1}[ \-]{0,1})0{0,1}\){0,1}4{1}[\d \-]{8,10})))$/";
+            if (!preg_match($australian_phone,$phone)) 
+            {
+              $res = array('status' => 0,'error-code'=>109, 'message' => "Mobile is not Australian phone no.");
+              return response()->json($res);
+            }
+
             $users = User::where('email', $email);
             if($users->count() > 0) {
                 $res = array('status' => 0,'error-code'=>101, 'message' => "user for this email already exists");
