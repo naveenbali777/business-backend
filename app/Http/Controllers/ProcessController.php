@@ -15,6 +15,36 @@ class ProcessController extends Controller
      * @return \Illuminate\Http\Response
      */
     
+    public function login(Request $request)
+    {
+        $email      = $request->email;
+        $password   = $request->password;
+
+        if($email !="" && $password !="")
+        {
+            $whereThese = ['email' => $email, 'password' => md5($password)];
+            $user = User::where($whereThese);
+            $userCount = $user->count();
+            
+            $code = str_random(64);
+                    
+            if($userCount > 0) {
+                $where = ['email' => $email];
+                $user = User::where($where)->update(array('remember_token' => $code));                        
+            }
+
+            $res = ($userCount > 0) ? array('status' => 1,'error-code'=>0, 'message' => "User Found",'token' => $code) : array('status' => 0,'error-code'=>201, 'message' => "Sorry! User not found");
+            return response()->json($res);
+
+        }else if($email ==""){
+            $res =  array('status' => 0,'error-code'=>202, 'message' => "Email is empty") ;
+            return response()->json($res);
+
+        }else if($password ==""){
+            $res =  array('status' => 0,'error-code'=>203, 'message' => "Password is empty") ;
+            return response()->json($res);
+        }
+    }
 
     public function register(Request $request)
     {
@@ -76,4 +106,24 @@ class ProcessController extends Controller
             return response()->json($res);
         }
     }
+    
+    public function logout(Request $request)
+    { 
+        $where = ['email' => $request->email];
+        $user = User::where($where);
+        $userCount = $user->count();        
+                
+        if($userCount > 0) {
+            $user = User::where($where)->update(array('remember_token' => NULL)); 
+            $res =  array('status' => 1,'error-code'=>200, 'message' => "user successfully logout") ;
+            return response()->json($res);                       
+        
+        } else {
+            $res =  array('status' => 0,'error-code'=>201, 'message' => "Sorry! User not found");
+            return response()->json($res);
+        }
+        
+    }  
+
+
 }

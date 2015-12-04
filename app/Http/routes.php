@@ -17,13 +17,11 @@ Route::get('/', function () {
 
 Route::post('register','ProcessController@register');
 
-//Route::get('/','WelcomeController@index');
-
-Route::get('home','HomeController@index');
-
 Route::post('login','ProcessController@login');
 
+Route::get('logout','ProcessController@logout');
 
+Route::get('home','HomeController@index');
 
 Route::controllers([
     'auth' => 'Auth\AuthController',
